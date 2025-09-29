@@ -1,12 +1,19 @@
 #include <cstdint>
 #include <string>
+#include "Hashing.h"
 
 class Store
 {
 private:
-    std::string mBackingStore[3];
+    static const int mArraySize = 64;
+    int mArrayCount = 0;
+    std::string mBackingStore[mArraySize];
+    Hashing *mHashing;
+
     void ResizeBackingStore();
 
 public:
-    void Put(uint64_t key, std::string &value);
+    Store();
+    void Put(std::string key, std::string value);
+    std::string Get(std::string key);
 };
