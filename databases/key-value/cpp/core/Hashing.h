@@ -4,5 +4,5 @@
 class Hashing
 {
 public:
-    uint64_t GetHashKey(std::string &key);
+    uint64_t GetHashKey(std::string key);
 };

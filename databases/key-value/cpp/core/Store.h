@@ -1,13 +1,14 @@
 #include <cstdint>
 #include <string>
+#include <vector>
 #include "Hashing.h"
 
 class Store
 {
 private:
-    static const int mArraySize = 64;
+    static const int mInitialSize = 64;
     int mArrayCount = 0;
-    std::string mBackingStore[mArraySize];
+    std::vector<std::string> mBackingStore;
     Hashing *mHashing;
 
     void ResizeBackingStore();

@@ -2,7 +2,7 @@
 #include <string>
 #include "Hashing.h"
 
-uint64_t Hashing::GetHashKey(std::string &key)
+uint64_t Hashing::GetHashKey(std::string key)
 {
     const uint64_t fnv_offset_basis = 14695981039346656037ULL;
     const uint64_t fnv_prime = 1099511628211ULL;
