@@ -10,7 +10,8 @@
                 "/nologo",
                 "/Fe${fileDirname}\\${fileBasenameNoExtension}.exe",
                 "${workspaceFolder}\\core\\*.cpp",
-                "${workspaceFolder}\\tests\\*.cpp"
+                "${workspaceFolder}\\tests\\*.cpp",
+                "${workspaceFolder}\\cli\\*.cpp"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"

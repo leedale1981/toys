@@ -1,6 +1,6 @@
 #include "..\core\Store.h"
 
-void main()
+void Test()
 {
     Store *store = new Store();
     store->Put("item1", "value1");
@@ -8,5 +8,5 @@ void main()
     store->Put("item3", "value3");
 
     std::string value = store->Get("item1");
-    printf("%s", value);
+    printf("%s", value.c_str());
 }
