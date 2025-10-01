@@ -8,6 +8,8 @@ Simple key value store
 ## TODO
 
 - Serialize data store to Disk
+- C++ library
+- .NET Connector
 - Handle multiple buckets
 - Collision handling
 
