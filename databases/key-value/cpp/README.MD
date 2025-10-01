@@ -1,11 +1,13 @@
 # LeeDB
 
-Simple key value store
+## Simple key value store
 
-- PUT <KEY> <VALUE>
-- GET <KEY> <VALUE>
+Commands:
 
-## TODO
+- PUT KEY VALUE
+- GET KEY VALUE
+
+### TODO:
 
 - Serialize data store to Disk
 - C++ library
