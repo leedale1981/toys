@@ -84,3 +84,26 @@ I asked ChatGPT for a list of toy projects to make me a better software engineer
 - Extend to constraints (springs, joints).
 
 - Skills: applied math, linear algebra, numerical stability, API design.
+
+## 11. Finance / Quant Dev
+
+- C++ / Java / Python mastery	Write production-grade code using STL, templates, RAII, and smart pointers in C++. Deepen concurrency models (threads, async, atomics).
+- Implement a mini-exchange simulator in C++ with order book matching (limit/market orders, FIFO queue).
+- Re-implement parts of the simulator in Java (for GC benchmarking) and Python (for prototyping).
+- Low-latency systems	Learn to reason about cache locality, branch prediction, and lock-free data structures.
+- Write a fixed-size ring buffer queue with std::atomic for inter-thread messaging.
+- Compare performance against std::queue under contention.
+- Networking	Get comfortable with TCP/UDP sockets, message serialization (FlatBuffers, Protobuf), and feed-handler design.
+- Parse live market data (e.g., Binance WebSocket feed).
+- Benchmark throughput & latency of your handler vs ZeroMQ or Kafka.
+- Profiling & optimization	Know how to measure, not guess.
+- Use perf, valgrind, gprof, or Visual Studio profiler to analyze hotspots.
+- Show before/after optimizations with real metrics.
+- Probability & Statistics	Be fluent with distributions, expectation, variance, correlation, hypothesis testing.	
+- Implement a Monte Carlo pricer for European options in Python and C++.
+- Calibrate a Gaussian model to synthetic returns.
+- Linear Algebra	Understand matrix ops, eigenvalues, SVD, covariance matrices.
+- Implement PCA on historical stock returns to find key market factors.
+- Time-series analysis	Use ARIMA, GARCH, and Kalman filters.
+- Backtest a volatility-targeting strategy using Python (pandas, statsmodels).
+- Optimization	Practice numerical optimization methods (gradient descent, Nelder–Mead, etc.).
