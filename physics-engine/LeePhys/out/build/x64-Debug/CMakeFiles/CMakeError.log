@@ -1,0 +1,65 @@
+Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+Compiler: D:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/VC/Tools/MSVC/14.29.30133/bin/Hostx64/x64/cl.exe 
+Build flags: 
+Id flags:  
+
+The output was:
+2
+Microsoft (R) C/C++ Optimizing Compiler Version 19.29.30159 for x64
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+CMakeCCompilerId.c
+Microsoft (R) Incremental Linker Version 14.29.30159.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+/out:CMakeCCompilerId.exe 
+CMakeCCompilerId.obj 
+LINK : fatal error LNK1104: cannot open file 'libucrt.lib'
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: D:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/VC/Tools/MSVC/14.29.30133/bin/Hostx64/x64/cl.exe 
+Build flags: 
+Id flags:  
+
+The output was:
+2
+Microsoft (R) C/C++ Optimizing Compiler Version 19.29.30159 for x64
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+CMakeCXXCompilerId.cpp
+Microsoft (R) Incremental Linker Version 14.29.30159.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+/out:CMakeCXXCompilerId.exe 
+CMakeCXXCompilerId.obj 
+LINK : fatal error LNK1104: cannot open file 'libucrt.lib'
+
+
+Detecting C compiler ABI info failed to compile with the following output:
+Change Dir: D:/src/toys/physics-engine/LeePhys/out/build/x64-Debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):D:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_62e15 && [1/2] Building C object CMakeFiles\cmTC_62e15.dir\CMakeCCompilerABI.c.obj
+[2/2] Linking C executable cmTC_62e15.exe
+FAILED: cmTC_62e15.exe 
+cmd.exe /C "cd . && "D:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_62e15.dir --rc="D:\Windows Kits\10\bin\10.0.22621.0\x64\rc.exe" --mt="D:\Windows Kits\10\bin\10.0.22621.0\x64\mt.exe" --manifests  -- "D:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.29.30133\bin\Hostx64\x64\link.exe" /nologo CMakeFiles\cmTC_62e15.dir\CMakeCCompilerABI.c.obj  /out:cmTC_62e15.exe /implib:cmTC_62e15.lib /pdb:cmTC_62e15.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+LINK Pass 1: command "D:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.29.30133\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_62e15.dir\CMakeCCompilerABI.c.obj /out:cmTC_62e15.exe /implib:cmTC_62e15.lib /pdb:cmTC_62e15.pdb /version:0.0 /machine:x64 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\cmTC_62e15.dir/intermediate.manifest CMakeFiles\cmTC_62e15.dir/manifest.res" failed (exit code 1104) with the following output:
+LINK : fatal error LNK1104: cannot open file 'ucrtd.lib'
+ninja: build stopped: subcommand failed.
+
+
+
+
+Determining if the C compiler works failed with the following output:
+Change Dir: D:/src/toys/physics-engine/LeePhys/out/build/x64-Debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):D:/Program Files (x86)/Microsoft Visual Studio/2019/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_1a134 && [1/2] Building C object CMakeFiles\cmTC_1a134.dir\testCCompiler.c.obj
+[2/2] Linking C executable cmTC_1a134.exe
+FAILED: cmTC_1a134.exe 
+cmd.exe /C "cd . && "D:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_1a134.dir --rc="D:\Windows Kits\10\bin\10.0.22621.0\x64\rc.exe" --mt="D:\Windows Kits\10\bin\10.0.22621.0\x64\mt.exe" --manifests  -- "D:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.29.30133\bin\Hostx64\x64\link.exe" /nologo CMakeFiles\cmTC_1a134.dir\testCCompiler.c.obj  /out:cmTC_1a134.exe /implib:cmTC_1a134.lib /pdb:cmTC_1a134.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+LINK Pass 1: command "D:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.29.30133\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_1a134.dir\testCCompiler.c.obj /out:cmTC_1a134.exe /implib:cmTC_1a134.lib /pdb:cmTC_1a134.pdb /version:0.0 /machine:x64 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\cmTC_1a134.dir/intermediate.manifest CMakeFiles\cmTC_1a134.dir/manifest.res" failed (exit code 1104) with the following output:
+LINK : fatal error LNK1104: cannot open file 'ucrtd.lib'
+ninja: build stopped: subcommand failed.
+
+
+

@@ -1,6 +1,2 @@
-﻿  leedb.cpp
-  Hashing.cpp
-  Store.cpp
-  test_store.cpp
-  Generating Code...
+﻿  Store.cpp
   LeeDB.vcxproj -> D:\src\toys\databases\key-value\cpp\LeeDB\Debug\LeeDB.exe

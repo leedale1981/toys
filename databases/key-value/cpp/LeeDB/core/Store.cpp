@@ -29,30 +29,13 @@ string Store::Get(string key)
 
 void Store::Flush()
 {
-    ofstream outStream(mFileName, ios::binary);
+    FILE* file;
+    fopen_s(&file, mFileName.c_str(), "wb");
 
-    if (!outStream)
+    if (file != NULL)
     {
-        throw runtime_error("Could not open data file!");
-    }
-
-    outStream.write(reinterpret_cast<const char *>(&mBucketSize), sizeof(mBucketSize));
-
-    for (uint64_t index = 0; index < mBucketSize; ++index)
-    {
-        const string value = mBackingStore[index];
-        const uint64_t len = static_cast<uint64_t>(value.length()); // bytes, no terminator
-        outStream.write(reinterpret_cast<const char *>(&len), sizeof(len));
-
-        if (len)
-        {
-            outStream.write(value.data(), len);
-        }
-    }
-
-    if (!outStream.good())
-    {
-        throw runtime_error("write error");
+        fwrite(mBackingStore, sizeof(mBackingStore), mArrayCount, file);
+        fclose(file);
     }
 }
 

@@ -9,9 +9,9 @@
                 "/EHsc",
                 "/nologo",
                 "/Fe${fileDirname}\\${fileBasenameNoExtension}.exe",
-                "${workspaceFolder}\\core\\*.cpp",
-                "${workspaceFolder}\\tests\\*.cpp",
-                "${workspaceFolder}\\cli\\*.cpp"
+                "${workspaceFolder}\\LeeDB\\core\\*.cpp",
+                "${workspaceFolder}\\LeeDB\\tests\\*.cpp",
+                "${workspaceFolder}\\LeeDB\\cli\\*.cpp"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
