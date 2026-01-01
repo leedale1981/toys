@@ -67,12 +67,12 @@ int main(int argc, char *argv[])
 
         if (execute)
         {
-            if (currentMode = 0)
+            if (currentMode == 0)
             {
                 printf("Gettiing %s: %s\n", currentKey.c_str(), store->Get(currentKey).c_str());
             }
 
-            if (currentMode = 1)
+            if (currentMode == 1)
             {
                 store->Put(currentKey, currentValue);
                 printf("Putting %s: %s\n", currentKey.c_str(), currentValue.c_str());

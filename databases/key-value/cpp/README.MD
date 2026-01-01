@@ -1,6 +1,8 @@
 # LeeDB
 
-## Simple key value store
+## Extremely Fast Simple Key Value Store
+
+Provides constant time lookup for key value pairs. Data persisted to disk.
 
 Commands:
 
@@ -9,7 +11,7 @@ Commands:
 
 ### TODO:
 
-- Serialize data store to Disk
+- Encrypt data at rest.
 - C++ library
 - .NET Connector
 - Handle multiple buckets
