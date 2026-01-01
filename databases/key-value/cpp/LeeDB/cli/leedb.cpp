@@ -4,6 +4,7 @@
 
 const int getMode = 0;
 const int putMode = 1;
+const int delMode = 2;
 int currentMode = -1;
 std::string currentKey;
 std::string currentValue;
@@ -32,6 +33,15 @@ bool HandleInput(std::string command)
         }
     }
 
+    if (currentMode == 2)
+    {
+        if (currentKey.empty())
+        {
+            currentKey = command;
+            return true;
+        }
+    }
+
     if (command == "put")
     {
         currentMode = 1;
@@ -40,6 +50,11 @@ bool HandleInput(std::string command)
     if (command == "get")
     {
         currentMode = 0;
+    }
+
+    if (command == "del")
+    {
+        currentMode = 2;
     }
 
     return false;
@@ -76,6 +91,12 @@ int main(int argc, char *argv[])
             {
                 store->Put(currentKey, currentValue);
                 printf("Putting %s: %s\n", currentKey.c_str(), currentValue.c_str());
+            }
+
+            if (currentMode == 2) 
+            {
+                store->Delete(currentKey);
+                printf("Deleting %s\n", currentKey.c_str());
             }
 
             Reset();

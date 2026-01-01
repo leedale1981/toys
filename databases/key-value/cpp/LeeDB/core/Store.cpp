@@ -20,6 +20,14 @@ void Store::Put(string key, string value)
     Flush();
 }
 
+void Store::Delete(string key)
+{
+    uint64_t hashKey = mHashing->GetHashKey(key);
+    int arrayIndex = hashKey % mBucketSize;
+    mBackingStore[arrayIndex] = "";
+    Flush();
+}
+
 string Store::Get(string key)
 {
     uint64_t hashKey = mHashing->GetHashKey(key);
