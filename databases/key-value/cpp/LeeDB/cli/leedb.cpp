@@ -1,5 +1,9 @@
 #include <cstdio>
 #include <iostream>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <iostream>
+#include <thread>
 #include "..\core\Store.h"
 
 const int getMode = 0;
@@ -65,42 +69,60 @@ void Reset()
     currentMode = -1;
     currentKey = "";
     currentValue = "";
-    printf("%s", "LeeDB ready >> ");
+    printf("%s", "LeeDB ready running...");
+}
+
+int SetupSockets()
+{
+    WSADATA wsaData;
+    int result = WSAStartup(MAKEWORD(2, 2), &wsaData);
+
+    if (result != 0) {
+        std::cerr << "WSAStartup failed: " << result << "\n";
+        return 1;
+    }
+
+    SOCKET listenSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (listenSock == INVALID_SOCKET) {
+        std::cerr << "socket failed\n";
+        WSACleanup();
+        return 1;
+    }
 }
 
 int main(int argc, char *argv[])
 {
     printf("%s", "Starting LeeDB ...\n");
+    int result = SetupSockets();
     Store *store = new Store();
-    printf("%s", "LeeDB ready >> ");
+    printf("%s", "LeeDB running...");
 
     std::string command;
-    while (command != "quit" || command != "exit")
+    
+    // listen for tcp/ip calls
+    // parse command
+    bool execute = HandleInput(command);
+
+    if (execute)
     {
-        std::cin >> command;
-        bool execute = HandleInput(command);
-
-        if (execute)
+        if (currentMode == 0)
         {
-            if (currentMode == 0)
-            {
-                printf("Gettiing %s: %s\n", currentKey.c_str(), store->Get(currentKey).c_str());
-            }
-
-            if (currentMode == 1)
-            {
-                store->Put(currentKey, currentValue);
-                printf("Putting %s: %s\n", currentKey.c_str(), currentValue.c_str());
-            }
-
-            if (currentMode == 2) 
-            {
-                store->Delete(currentKey);
-                printf("Deleting %s\n", currentKey.c_str());
-            }
-
-            Reset();
+            printf("Gettiing %s: %s\n", currentKey.c_str(), store->Get(currentKey).c_str());
         }
+
+        if (currentMode == 1)
+        {
+            store->Put(currentKey, currentValue);
+            printf("Putting %s: %s\n", currentKey.c_str(), currentValue.c_str());
+        }
+
+        if (currentMode == 2) 
+        {
+            store->Delete(currentKey);
+            printf("Deleting %s\n", currentKey.c_str());
+        }
+
+        Reset();
     }
 
     return 0;

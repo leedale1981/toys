@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.36602.28
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LeeDB", "LeeDB.vcxproj", "{7992337C-26BE-4497-9B4D-D72195224D69}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LeeDB.Cli", "..\LeeDB.Cli\LeeDB.Cli.vcxproj", "{32F8782F-115E-4D88-995F-2B6360018326}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{7992337C-26BE-4497-9B4D-D72195224D69}.Release|x64.Build.0 = Release|x64
 		{7992337C-26BE-4497-9B4D-D72195224D69}.Release|x86.ActiveCfg = Release|Win32
 		{7992337C-26BE-4497-9B4D-D72195224D69}.Release|x86.Build.0 = Release|Win32
+		{32F8782F-115E-4D88-995F-2B6360018326}.Debug|x64.ActiveCfg = Debug|x64
+		{32F8782F-115E-4D88-995F-2B6360018326}.Debug|x64.Build.0 = Debug|x64
+		{32F8782F-115E-4D88-995F-2B6360018326}.Debug|x86.ActiveCfg = Debug|Win32
+		{32F8782F-115E-4D88-995F-2B6360018326}.Debug|x86.Build.0 = Debug|Win32
+		{32F8782F-115E-4D88-995F-2B6360018326}.Release|x64.ActiveCfg = Release|x64
+		{32F8782F-115E-4D88-995F-2B6360018326}.Release|x64.Build.0 = Release|x64
+		{32F8782F-115E-4D88-995F-2B6360018326}.Release|x86.ActiveCfg = Release|Win32
+		{32F8782F-115E-4D88-995F-2B6360018326}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

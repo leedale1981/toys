@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\Core",
+    "\\QM"
   ],
-  "SelectedNode": "\\LeeVector2d.h",
+  "SelectedNode": "\\QM\\HilbertSpace.h",
   "PreviewInSolutionExplorer": false
 }
