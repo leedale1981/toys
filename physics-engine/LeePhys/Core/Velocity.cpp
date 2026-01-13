@@ -1,6 +1,6 @@
 #include "Velocity.h"
 
-Velocity::Velocity(LeeVector2d* vector, std::function<float(float)> velocityFunction)
+Velocity::Velocity(Vector2d* vector, std::function<float(float)> velocityFunction)
 {
 	mVector = vector;
 	mVelocityFunction = velocityFunction;

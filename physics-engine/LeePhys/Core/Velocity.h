@@ -1,12 +1,14 @@
-#include "LeeVector2d.h"
+#include "Vector2d.h"
 #include <functional>
+
+using namespace LeePhys;
 
 class Velocity
 {
 public:
-	Velocity(LeeVector2d* vector, std::function<float(float)> velocityFunction);
+	Velocity(Vector2d* vector, std::function<float(float)> velocityFunction);
 	float GetAverageSpeed(float time1, float time2);
 private:
-	LeeVector2d* mVector;
+	Vector2d* mVector;
 	std::function<float(float)> mVelocityFunction
 };
