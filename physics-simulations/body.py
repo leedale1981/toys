@@ -17,8 +17,8 @@ class Body:
         acceleration = self.force / self.mass
 
         # Euler integration
-        self.vel = acceleration * deltaTime
-        self.pos = self.vel * deltaTime
+        self.vel += acceleration * deltaTime
+        self.pos += self.vel * deltaTime
 
         self.force.update(0, 0)
 
