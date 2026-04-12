@@ -1,0 +1,23 @@
+<Solution>
+  <Folder Name="/domain/">
+    <Project Path="domain/LD.Messaging.Domain/LD.Messaging.Domain.csproj" />
+  </Folder>
+  <Folder Name="/adapter/">
+    <Project Path="adapter/LD.Messaging.Adapter/LD.Messaging.Adapter.csproj" />
+  </Folder>
+  <Folder Name="/adapter-tests/">
+    <Project Path="adapter-tests/LD.Messaging.Adapter.Tests/LD.Messaging.Adapter.Tests.csproj" />
+  </Folder>
+  <Folder Name="/file-service/">
+    <Project Path="file-service/LD.Messaging.FileService/LD.Messaging.FileService.csproj" />
+  </Folder>
+  <Folder Name="/ingestion-service/">
+    <Project Path="ingestion-service/LD.Messaging.Ingestion/LD.Messaging.Ingestion.csproj" />
+  </Folder>
+  <Folder Name="/stock-generator/">
+    <Project Path="stock-generator/LD.Messaging.StockGenerator/LD.Messaging.StockGenerator.csproj" />
+  </Folder>
+  <Folder Name="/file-service-benchmarks/">
+    <Project Path="file-service-benchmarks/LD.Messaging.FileService.Benchmarks/LD.Messaging.FileService.Benchmarks.csproj" />
+  </Folder>
+</Solution>

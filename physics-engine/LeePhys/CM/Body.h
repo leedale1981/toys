@@ -11,5 +11,7 @@ private:
 
 public:
 	Body(Vector2d position, Vector2d mass);
-
+	ApplyForce(Vector2d force);
+	Update(double deltaTime);
+	Draw();
 };

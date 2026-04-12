@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls \"D:\\\\\\\\src\\\\\\\\toys\\\\\\\\messaging-dotnet\\\\\\\\\")",
+      "Bash(dir \"D:\\\\src\\\\toys\\\\messaging-dotnet\")",
+      "Bash(dotnet build:*)"
+    ]
+  }
+}

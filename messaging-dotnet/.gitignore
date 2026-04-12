@@ -1,0 +1,58 @@
+# Build output
+bin/
+obj/
+out/
+publish/
+
+# BenchmarkDotNet results
+BenchmarkDotNet.Artifacts/
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+project.lock.json
+project.fragment.lock.json
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.DotSettings.user
+
+# Rider
+.idea/
+*.DotSettings
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Test results
+TestResults/
+coverage/
+*.trx
+*.coverage
+*.coveragexml
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Generated data (stock generator output)
+generated-data/
+
+# Environment / secrets
+.env
+*.env
+appsettings.*.json
+!appsettings.json
+secrets.json

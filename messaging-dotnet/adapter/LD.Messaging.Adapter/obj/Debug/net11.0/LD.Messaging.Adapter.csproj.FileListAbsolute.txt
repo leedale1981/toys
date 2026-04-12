@@ -1,0 +1,16 @@
+D:\src\toys\messaging-dotnet\adapter\LD.Messaging.Adapter\bin\Debug\net11.0\LD.Messaging.Adapter.deps.json
+D:\src\toys\messaging-dotnet\adapter\LD.Messaging.Adapter\bin\Debug\net11.0\LD.Messaging.Adapter.dll
+D:\src\toys\messaging-dotnet\adapter\LD.Messaging.Adapter\bin\Debug\net11.0\LD.Messaging.Adapter.pdb
+D:\src\toys\messaging-dotnet\adapter\LD.Messaging.Adapter\bin\Debug\net11.0\LD.Messaging.Domain.dll
+D:\src\toys\messaging-dotnet\adapter\LD.Messaging.Adapter\bin\Debug\net11.0\LD.Messaging.Domain.pdb
+D:\src\toys\messaging-dotnet\adapter\LD.Messaging.Adapter\obj\Debug\net11.0\LD.Messaging.Adapter.csproj.AssemblyReference.cache
+D:\src\toys\messaging-dotnet\adapter\LD.Messaging.Adapter\obj\Debug\net11.0\LD.Messaging.Adapter.GeneratedMSBuildEditorConfig.editorconfig
+D:\src\toys\messaging-dotnet\adapter\LD.Messaging.Adapter\obj\Debug\net11.0\LD.Messaging.Adapter.AssemblyInfoInputs.cache
+D:\src\toys\messaging-dotnet\adapter\LD.Messaging.Adapter\obj\Debug\net11.0\LD.Messaging.Adapter.AssemblyInfo.cs
+D:\src\toys\messaging-dotnet\adapter\LD.Messaging.Adapter\obj\Debug\net11.0\LD.Messaging.Adapter.csproj.CoreCompileInputs.cache
+D:\src\toys\messaging-dotnet\adapter\LD.Messaging.Adapter\obj\Debug\net11.0\LD.Messaging.Adapter.sourcelink.json
+D:\src\toys\messaging-dotnet\adapter\LD.Messaging.Adapter\obj\Debug\net11.0\LD.Messa.FE7BDC11.Up2Date
+D:\src\toys\messaging-dotnet\adapter\LD.Messaging.Adapter\obj\Debug\net11.0\LD.Messaging.Adapter.dll
+D:\src\toys\messaging-dotnet\adapter\LD.Messaging.Adapter\obj\Debug\net11.0\refint\LD.Messaging.Adapter.dll
+D:\src\toys\messaging-dotnet\adapter\LD.Messaging.Adapter\obj\Debug\net11.0\LD.Messaging.Adapter.pdb
+D:\src\toys\messaging-dotnet\adapter\LD.Messaging.Adapter\obj\Debug\net11.0\ref\LD.Messaging.Adapter.dll
