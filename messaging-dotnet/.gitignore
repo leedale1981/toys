@@ -1,8 +1,8 @@
 # Build output
-bin/
-obj/
-out/
-publish/
+*bin/
+*obj/
+*out/
+*publish/
 
 # BenchmarkDotNet results
 BenchmarkDotNet.Artifacts/
