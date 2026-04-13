@@ -15,15 +15,32 @@ public sealed class FileMonitorService(
     ILogger<FileMonitorService> logger,
     IStockFileAdapter adapter,
     StockPublisher publisher,
-    IConfiguration configuration)
+    IConfiguration configuration,
+    IHostApplicationLifetime lifetime)
     : BackgroundService
 {
     private readonly string _watchPath = configuration["FileMonitor:WatchPath"] ?? "test-data";
     private readonly string _filter = configuration["FileMonitor:Filter"] ?? "*.txt";
     private FileSystemWatcher? _watcher;
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        // Wait until the host is fully started (all hosted services, including the
+        // MassTransit bus and Kafka rider) before enabling the file watcher.
+        try
+        {
+            await Task.Delay(Timeout.Infinite, lifetime.ApplicationStarted);
+        }
+        catch (OperationCanceledException)
+        {
+            // Expected: ApplicationStarted fires as a cancellation.
+        }
+
+        if (stoppingToken.IsCancellationRequested)
+        {
+            return;
+        }
+
         var fullPath = Path.IsPathRooted(_watchPath)
             ? _watchPath
             : Path.Combine(AppContext.BaseDirectory, _watchPath);
@@ -44,7 +61,6 @@ public sealed class FileMonitorService(
         _watcher.Error   += OnWatcherError;
 
         stoppingToken.Register(DisposeWatcher);
-        return Task.CompletedTask;
     }
 
     private void OnFileEvent(object sender, FileSystemEventArgs e)

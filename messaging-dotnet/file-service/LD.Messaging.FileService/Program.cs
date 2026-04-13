@@ -10,7 +10,6 @@ var builder = Host.CreateApplicationBuilder(args);
 // ── Services ──────────────────────────────────────────────────────────────
 builder.Services.AddSingleton<IStockFileAdapter, StockFileAdapter>();
 builder.Services.AddSingleton<StockPublisher>();
-builder.Services.AddHostedService<FileMonitorService>();
 
 // ── MassTransit + Kafka ───────────────────────────────────────────────────
 // The main bus uses in-memory transport (no broker needed for the bus itself).
@@ -31,5 +30,9 @@ builder.Services.AddMassTransit(x =>
         });
     });
 });
+
+// Registered after MassTransit so the Kafka rider is fully started before
+// FileMonitorService begins watching for files.
+builder.Services.AddHostedService<FileMonitorService>();
 
 await builder.Build().RunAsync();
