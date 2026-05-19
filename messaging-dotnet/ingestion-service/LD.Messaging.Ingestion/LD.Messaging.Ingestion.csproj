@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\domain\LD.Messaging.Domain\LD.Messaging.Domain.csproj" />
+    <ProjectReference Include="..\..\infrastructure\LD.Messaging.Infrastructure.Persistence\LD.Messaging.Infrastructure.Persistence.csproj" />
   </ItemGroup>
 
   <ItemGroup>

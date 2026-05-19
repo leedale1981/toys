@@ -1,12 +1,15 @@
 using LD.Messaging.Domain.Messages;
+using LD.Messaging.Infrastructure.Persistence.Commands;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
 namespace LD.Messaging.Ingestion.Consumers;
 
-public sealed class NasdaqConsumer(ILogger<NasdaqConsumer> logger) : IConsumer<NasdaqData>
+public sealed class NasdaqConsumer(
+    SaveStockRecordsCommandHandler commandHandler,
+    ILogger<NasdaqConsumer> logger) : IConsumer<NasdaqData>
 {
-    public Task Consume(ConsumeContext<NasdaqData> context)
+    public async Task Consume(ConsumeContext<NasdaqData> context)
     {
         var msg = context.Message;
         logger.LogInformation(
@@ -20,6 +23,16 @@ public sealed class NasdaqConsumer(ILogger<NasdaqConsumer> logger) : IConsumer<N
                 record.Symbol, record.Name, record.Close, record.ChangePercent, record.Volume);
         }
 
-        return Task.CompletedTask;
+        // Execute CQRS command to persist stock records to PostgreSQL
+        var command = new SaveStockRecordsCommand(
+            Records: msg.Records,
+            Exchange: "NASDAQ",
+            RecordDate: msg.Date,
+            RecordTime: msg.Time,
+            FileName: msg.FileName);
+
+        await commandHandler.HandleAsync(command, context.CancellationToken);
+
+        logger.LogInformation("[NASDAQ] Successfully persisted {Count} records to database", msg.Records.Count);
     }
 }

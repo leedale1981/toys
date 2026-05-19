@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/api/">
+    <Project Path="api/LD.Messaging.Api/LD.Messaging.Api.csproj" />
+  </Folder>
   <Folder Name="/domain/">
     <Project Path="domain/LD.Messaging.Domain/LD.Messaging.Domain.csproj" />
   </Folder>
@@ -7,6 +10,9 @@
   </Folder>
   <Folder Name="/adapter-tests/">
     <Project Path="adapter-tests/LD.Messaging.Adapter.Tests/LD.Messaging.Adapter.Tests.csproj" />
+  </Folder>
+  <Folder Name="/infrastructure/">
+    <Project Path="infrastructure/LD.Messaging.Infrastructure.Persistence/LD.Messaging.Infrastructure.Persistence.csproj" />
   </Folder>
   <Folder Name="/file-service/">
     <Project Path="file-service/LD.Messaging.FileService/LD.Messaging.FileService.csproj" />

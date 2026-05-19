@@ -1,12 +1,15 @@
 using LD.Messaging.Domain.Messages;
+using LD.Messaging.Infrastructure.Persistence.Commands;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
 namespace LD.Messaging.Ingestion.Consumers;
 
-public sealed class Ftse500Consumer(ILogger<Ftse500Consumer> logger) : IConsumer<Ftse500Data>
+public sealed class Ftse500Consumer(
+    SaveStockRecordsCommandHandler commandHandler,
+    ILogger<Ftse500Consumer> logger) : IConsumer<Ftse500Data>
 {
-    public Task Consume(ConsumeContext<Ftse500Data> context)
+    public async Task Consume(ConsumeContext<Ftse500Data> context)
     {
         var msg = context.Message;
         logger.LogInformation(
@@ -20,6 +23,16 @@ public sealed class Ftse500Consumer(ILogger<Ftse500Consumer> logger) : IConsumer
                 record.Symbol, record.Name, record.Close, record.ChangePercent, record.Volume);
         }
 
-        return Task.CompletedTask;
+        // Execute CQRS command to persist stock records to PostgreSQL
+        var command = new SaveStockRecordsCommand(
+            Records: msg.Records,
+            Exchange: "FTSE500",
+            RecordDate: msg.Date,
+            RecordTime: msg.Time,
+            FileName: msg.FileName);
+
+        await commandHandler.HandleAsync(command, context.CancellationToken);
+
+        logger.LogInformation("[FTSE500] Successfully persisted {Count} records to database", msg.Records.Count);
     }
 }
