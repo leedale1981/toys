@@ -1,5 +1,5 @@
 ﻿using LD.Messaging.Domain;
-using LD.Messaging.Infrastructure.Persistence.Commands;
+using LD.Messaging.DataInterfaces.StockRecords;
 using LD.Messaging.Infrastructure.Persistence.Entities;
 
 namespace LD.Messaging.Infrastructure.Persistence.Mapping;

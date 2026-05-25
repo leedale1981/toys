@@ -1,12 +1,13 @@
+using LD.Messaging.DataInterfaces.Commands;
+using LD.Messaging.DataInterfaces.StockRecords;
 using LD.Messaging.Domain.Messages;
-using LD.Messaging.Infrastructure.Persistence.Commands;
 using MassTransit;
 using Microsoft.Extensions.Logging;
 
 namespace LD.Messaging.Ingestion.Consumers;
 
 public sealed class Ftse500Consumer(
-    SaveStockRecordsCommandHandler commandHandler,
+    ICommandHandler<SaveStockRecordsCommand> commandHandler,
     ILogger<Ftse500Consumer> logger) : IConsumer<Ftse500Data>
 {
     public async Task Consume(ConsumeContext<Ftse500Data> context)
@@ -23,7 +24,6 @@ public sealed class Ftse500Consumer(
                 record.Symbol, record.Name, record.Close, record.ChangePercent, record.Volume);
         }
 
-        // Execute CQRS command to persist stock records to PostgreSQL
         var command = new SaveStockRecordsCommand(
             Records: msg.Records,
             Exchange: "FTSE500",

@@ -1,13 +1,50 @@
 version: '3.8'
 
-# Local Kafka stack for development and testing.
+# Full local development stack.
 # Run:  docker compose up -d
 # Stop: docker compose down
 #
-# Kafka broker:  localhost:9092
-# Kafka UI:      http://localhost:8080
+# Services:
+#   Kafka broker:    localhost:9092
+#   Kafka UI:        http://localhost:8080
+#   PostgreSQL:      localhost:5432
+#   Seq (UI+logs):   http://localhost:5341
+#   API:             http://localhost:8081
+#   Ingestion svc:   (background worker)
+#   File svc:        (background worker)
 
 services:
+
+  # ── Infrastructure ──────────────────────────────────────────────────────
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: ld-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: stock_records
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/LD.Messaging.Infrastructure.Persistence/setup-database.sql:/docker-entrypoint-initdb.d/01-setup.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d stock_records"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  seq:
+    image: datalust/seq:latest
+    container_name: ld-seq
+    ports:
+      - "5341:80"      # Seq UI + Serilog HTTP sink + OTLP HTTP ingestion
+      - "45341:45341"  # OTLP gRPC ingestion (optional)
+    environment:
+      ACCEPT_EULA: "Y"
+    volumes:
+      - seq_data:/data
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.0
@@ -37,7 +74,6 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      # Advertise localhost so the .NET services (running on the host) can reach the broker
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
@@ -52,7 +88,6 @@ services:
       timeout: 10s
       retries: 10
 
-  # Pre-create the topics so consumers start with known partitions
   kafka-init:
     image: confluentinc/cp-kafka:7.6.0
     depends_on:
@@ -65,7 +100,6 @@ services:
        kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic NASDAQ  --partitions 1 --replication-factor 1 &&
        echo 'Topics created: FTSE500, NYSE, NASDAQ'"
 
-  # Kafka UI — browse topics, messages, consumer groups at http://localhost:8080
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     container_name: ld-kafka-ui
@@ -77,3 +111,62 @@ services:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+
+  # ── Application Services ─────────────────────────────────────────────────
+
+  api:
+    build:
+      context: .
+      dockerfile: api/LD.Messaging.Api/Dockerfile
+    container_name: ld-api
+    ports:
+      - "8081:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__StockRecordsDb: "Host=postgres;Port=5432;Database=stock_records;Username=postgres;Password=postgres"
+      Seq__ServerUrl: "http://seq:80"
+      Seq__OtlpEndpoint: "http://seq:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      seq:
+        condition: service_started
+
+  ingestion:
+    build:
+      context: .
+      dockerfile: ingestion-service/LD.Messaging.Ingestion/Dockerfile
+    container_name: ld-ingestion
+    environment:
+      DOTNET_ENVIRONMENT: Production
+      ConnectionStrings__StockRecordsDb: "Host=postgres;Port=5432;Database=stock_records;Username=postgres;Password=postgres"
+      Seq__ServerUrl: "http://seq:80"
+      Seq__OtlpEndpoint: "http://seq:80"
+      Kafka__BootstrapServers: "kafka:29092"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      seq:
+        condition: service_started
+      kafka:
+        condition: service_healthy
+
+  file-service:
+    build:
+      context: .
+      dockerfile: file-service/LD.Messaging.FileService/Dockerfile
+    container_name: ld-file-service
+    environment:
+      DOTNET_ENVIRONMENT: Production
+      Seq__ServerUrl: "http://seq:80"
+      Seq__OtlpEndpoint: "http://seq:80"
+      Kafka__BootstrapServers: "kafka:29092"
+    depends_on:
+      seq:
+        condition: service_started
+      kafka:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  seq_data:

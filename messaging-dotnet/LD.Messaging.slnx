@@ -5,6 +5,9 @@
   <Folder Name="/domain/">
     <Project Path="domain/LD.Messaging.Domain/LD.Messaging.Domain.csproj" />
   </Folder>
+  <Folder Name="/data-interfaces/">
+    <Project Path="data-interfaces/LD.Messaging.Data.Interfaces/LD.Messaging.Data.Interfaces.csproj" />
+  </Folder>
   <Folder Name="/adapter/">
     <Project Path="adapter/LD.Messaging.Adapter/LD.Messaging.Adapter.csproj" />
   </Folder>

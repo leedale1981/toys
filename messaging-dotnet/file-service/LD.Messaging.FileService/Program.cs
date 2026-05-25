@@ -1,38 +1,96 @@
 using LD.Messaging.Adapter;
 using LD.Messaging.Domain.Messages;
+using LD.Messaging.FileService;
 using LD.Messaging.FileService.Services;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using Serilog;
 
-var builder = Host.CreateApplicationBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-// ── Services ──────────────────────────────────────────────────────────────
-builder.Services.AddSingleton<IStockFileAdapter, StockFileAdapter>();
-builder.Services.AddSingleton<StockPublisher>();
-
-// ── MassTransit + Kafka ───────────────────────────────────────────────────
-// The main bus uses in-memory transport (no broker needed for the bus itself).
-// All stock-data publishing goes through the Kafka rider with one topic per exchange.
-builder.Services.AddMassTransit(x =>
+try
 {
-    x.UsingInMemory();
+    var builder = Host.CreateApplicationBuilder(args);
 
-    x.AddRider(rider =>
+    // ── Serilog ───────────────────────────────────────────────────────────
+    builder.Services.AddSerilog((services, cfg) =>
     {
-        rider.AddProducer<Ftse500Data>("FTSE500");
-        rider.AddProducer<NyseData>("NYSE");
-        rider.AddProducer<NasdaqData>("NASDAQ");
+        cfg
+            .ReadFrom.Configuration(builder.Configuration)
+            .ReadFrom.Services(services)
+            .Enrich.FromLogContext()
+            .Enrich.WithMachineName()
+            .Enrich.WithEnvironmentName()
+            .Enrich.WithProcessId()
+            .Enrich.WithThreadId()
+            .Enrich.WithProperty("Application", "LD.Messaging.FileService")
+            .WriteTo.Console(
+                outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
+            .WriteTo.Seq(builder.Configuration["Seq:ServerUrl"] ?? "http://localhost:5341");
+    });
 
-        rider.UsingKafka((_, k) =>
+    // ── OpenTelemetry ─────────────────────────────────────────────────────
+    var seqOtlpEndpoint = builder.Configuration["Seq:OtlpEndpoint"] ?? "http://localhost:5341";
+
+    builder.Services
+        .AddOpenTelemetry()
+        .ConfigureResource(r => r.AddService(
+            serviceName: DiagnosticsConfig.ServiceName,
+            serviceVersion: "1.0.0"))
+        .WithTracing(tracing => tracing
+            .AddHttpClientInstrumentation()
+            .AddSource(DiagnosticsConfig.SourceName)
+            .AddOtlpExporter(o =>
+            {
+                o.Endpoint = new Uri($"{seqOtlpEndpoint}/ingest/otlp/v1/traces");
+                o.Protocol = OtlpExportProtocol.HttpProtobuf;
+            }))
+        .WithMetrics(metrics => metrics
+            .AddRuntimeInstrumentation()
+            .AddOtlpExporter(o =>
+            {
+                o.Endpoint = new Uri($"{seqOtlpEndpoint}/ingest/otlp/v1/metrics");
+                o.Protocol = OtlpExportProtocol.HttpProtobuf;
+            }));
+
+    // ── Services ──────────────────────────────────────────────────────────
+    builder.Services.AddSingleton<IStockFileAdapter, StockFileAdapter>();
+    builder.Services.AddSingleton<StockPublisher>();
+
+    // ── MassTransit + Kafka ───────────────────────────────────────────────
+    builder.Services.AddMassTransit(x =>
+    {
+        x.UsingInMemory();
+
+        x.AddRider(rider =>
         {
-            k.Host(builder.Configuration["Kafka:BootstrapServers"] ?? "localhost:9092");
+            rider.AddProducer<Ftse500Data>("FTSE500");
+            rider.AddProducer<NyseData>("NYSE");
+            rider.AddProducer<NasdaqData>("NASDAQ");
+
+            rider.UsingKafka((_, k) =>
+            {
+                k.Host(builder.Configuration["Kafka:BootstrapServers"] ?? "localhost:9092");
+            });
         });
     });
-});
 
-// Registered after MassTransit so the Kafka rider is fully started before
-// FileMonitorService begins watching for files.
-builder.Services.AddHostedService<FileMonitorService>();
+    builder.Services.AddHostedService<FileMonitorService>();
 
-await builder.Build().RunAsync();
+    await builder.Build().RunAsync();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\domain\LD.Messaging.Domain\LD.Messaging.Domain.csproj" />
+    <ProjectReference Include="..\..\data-interfaces\LD.Messaging.Data.Interfaces\LD.Messaging.Data.Interfaces.csproj" />
   </ItemGroup>
 
 </Project>

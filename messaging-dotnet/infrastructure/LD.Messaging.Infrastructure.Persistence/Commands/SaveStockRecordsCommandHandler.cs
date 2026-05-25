@@ -1,4 +1,6 @@
-﻿using LD.Messaging.Domain;
+﻿using LD.Messaging.DataInterfaces.Commands;
+using LD.Messaging.DataInterfaces.StockRecords;
+using LD.Messaging.Domain;
 using LD.Messaging.Infrastructure.Persistence.Mapping;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -7,16 +9,13 @@ namespace LD.Messaging.Infrastructure.Persistence.Commands;
 
 /// <summary>
 /// Handles the SaveStockRecordsCommand by persisting records to PostgreSQL.
-/// 
-/// Security Considerations:
-/// - Uses EF Core which automatically generates parameterized queries (prevents SQL injection)
-/// - All user input (exchange, dates, file names, stock data) is passed as parameters, never as SQL strings
-/// - No string concatenation is performed for SQL queries
-/// - Input validation is performed before database operations
+/// Implements <see cref="ICommandHandler{TCommand}"/> so the concrete handler is
+/// never referenced directly — callers depend only on the interface.
 /// </summary>
 public sealed class SaveStockRecordsCommandHandler(
     StockRecordsDbContext dbContext,
     ILogger<SaveStockRecordsCommandHandler> logger)
+    : ICommandHandler<SaveStockRecordsCommand>
 {
     private readonly StockRecordsDbContext _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     private readonly ILogger<SaveStockRecordsCommandHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -88,20 +87,28 @@ public sealed class SaveStockRecordsCommandHandler(
     private static void ValidateCommand(SaveStockRecordsCommand command)
     {
         if (command.Records == null || command.Records.Count == 0)
+        {
             throw new ArgumentException("Records collection cannot be null or empty", nameof(command));
+        }
 
         if (string.IsNullOrWhiteSpace(command.Exchange))
+        {
             throw new ArgumentException("Exchange cannot be null or empty", nameof(command.Exchange));
+        }
 
         if (string.IsNullOrWhiteSpace(command.FileName))
+        {
             throw new ArgumentException("FileName cannot be null or empty", nameof(command.FileName));
+        }
 
         // Validate exchange is one of the known values
         var validExchanges = new[] { "FTSE500", "NYSE", "NASDAQ" };
         if (!validExchanges.Contains(command.Exchange))
+        {
             throw new ArgumentException(
                 $"Exchange must be one of: {string.Join(", ", validExchanges)}",
                 nameof(command.Exchange));
+        }
 
         // Validate individual stock records
         try
@@ -158,4 +165,3 @@ public sealed class SaveStockRecordsCommandHandler(
         }
     }
 }
-

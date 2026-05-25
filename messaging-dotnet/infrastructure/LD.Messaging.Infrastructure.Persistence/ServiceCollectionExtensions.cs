@@ -1,4 +1,9 @@
-﻿using LD.Messaging.Infrastructure.Persistence.Commands;
+﻿using LD.Messaging.DataInterfaces.Commands;
+using LD.Messaging.DataInterfaces.Queries;
+using LD.Messaging.DataInterfaces.StockRecords;
+using LD.Messaging.Domain;
+using LD.Messaging.Infrastructure.Persistence.Commands;
+using LD.Messaging.Infrastructure.Persistence.Queries;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,7 +19,8 @@ public static class PersistenceServiceCollectionExtensions
     /// 
     /// Registers:
     /// - StockRecordsDbContext configured for PostgreSQL
-    /// - SaveStockRecordsCommandHandler for handling persistence commands
+    /// - <see cref="ICommandHandler{SaveStockRecordsCommand}"/> for writing stock records
+    /// - <see cref="IQueryHandler{GetStockRecordsQuery, IReadOnlyList{StockRecord}}"/> for reading stock records
     /// 
     /// Database Connection:
     /// The PostgreSQL connection string is read from configuration key "ConnectionStrings:StockRecordsDb"
@@ -24,12 +30,16 @@ public static class PersistenceServiceCollectionExtensions
         string connectionString)
     {
         if (services == null)
+        {
             throw new ArgumentNullException(nameof(services));
+        }
 
         if (string.IsNullOrWhiteSpace(connectionString))
+        {
             throw new ArgumentException(
                 "PostgreSQL connection string cannot be null or empty",
                 nameof(connectionString));
+        }
 
         // Register DbContext with PostgreSQL provider
         services.AddDbContext<StockRecordsDbContext>(options =>
@@ -38,7 +48,6 @@ public static class PersistenceServiceCollectionExtensions
                 connectionString,
                 npgsqlOptions =>
                 {
-                    // Enable automatic query parameters to prevent any possibility of SQL injection
                     npgsqlOptions.EnableRetryOnFailure(
                         maxRetryCount: 3,
                         maxRetryDelay: TimeSpan.FromSeconds(10),
@@ -46,10 +55,12 @@ public static class PersistenceServiceCollectionExtensions
                 });
         });
 
-        // Register command handler
-        services.AddScoped<SaveStockRecordsCommandHandler>();
+        // Register command handler against its interface (write operations)
+        services.AddScoped<ICommandHandler<SaveStockRecordsCommand>, SaveStockRecordsCommandHandler>();
+
+        // Register query handler against its interface (read operations)
+        services.AddScoped<IQueryHandler<GetStockRecordsQuery, IReadOnlyList<StockRecord>>, GetStockRecordsQueryHandler>();
 
         return services;
     }
 }
-

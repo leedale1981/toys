@@ -1,52 +1,115 @@
 using Confluent.Kafka;
 using LD.Messaging.Domain.Messages;
+using LD.Messaging.Ingestion;
 using LD.Messaging.Ingestion.Consumers;
 using LD.Messaging.Infrastructure.Persistence;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using Serilog;
 
-var builder = Host.CreateApplicationBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-// Add persistence layer with PostgreSQL
-var connectionString = builder.Configuration.GetConnectionString("StockRecordsDb")
-    ?? throw new InvalidOperationException("Connection string 'StockRecordsDb' not found in configuration");
-
-builder.Services.AddStockRecordsPersistence(connectionString);
-
-builder.Services.AddMassTransit(x =>
+try
 {
-    x.UsingInMemory();
+    var builder = Host.CreateApplicationBuilder(args);
 
-    x.AddRider(rider =>
+    // ── Serilog ───────────────────────────────────────────────────────────
+    builder.Services.AddSerilog((services, cfg) =>
     {
-        rider.AddConsumer<Ftse500Consumer>();
-        rider.AddConsumer<NyseConsumer>();
-        rider.AddConsumer<NasdaqConsumer>();
+        cfg
+            .ReadFrom.Configuration(builder.Configuration)
+            .ReadFrom.Services(services)
+            .Enrich.FromLogContext()
+            .Enrich.WithMachineName()
+            .Enrich.WithEnvironmentName()
+            .Enrich.WithProcessId()
+            .Enrich.WithThreadId()
+            .Enrich.WithProperty("Application", "LD.Messaging.Ingestion")
+            .WriteTo.Console(
+                outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
+            .WriteTo.Seq(builder.Configuration["Seq:ServerUrl"] ?? "http://localhost:5341");
+    });
 
-        rider.UsingKafka((ctx, k) =>
+    // ── OpenTelemetry ─────────────────────────────────────────────────────
+    var seqOtlpEndpoint = builder.Configuration["Seq:OtlpEndpoint"] ?? "http://localhost:5341";
+
+    builder.Services
+        .AddOpenTelemetry()
+        .ConfigureResource(r => r.AddService(
+            serviceName: DiagnosticsConfig.ServiceName,
+            serviceVersion: "1.0.0"))
+        .WithTracing(tracing => tracing
+            .AddHttpClientInstrumentation()
+            .AddSource(DiagnosticsConfig.SourceName)
+            .AddOtlpExporter(o =>
+            {
+                o.Endpoint = new Uri($"{seqOtlpEndpoint}/ingest/otlp/v1/traces");
+                o.Protocol = OtlpExportProtocol.HttpProtobuf;
+            }))
+        .WithMetrics(metrics => metrics
+            .AddRuntimeInstrumentation()
+            .AddOtlpExporter(o =>
+            {
+                o.Endpoint = new Uri($"{seqOtlpEndpoint}/ingest/otlp/v1/metrics");
+                o.Protocol = OtlpExportProtocol.HttpProtobuf;
+            }));
+
+    // ── Persistence ───────────────────────────────────────────────────────
+    var connectionString = builder.Configuration.GetConnectionString("StockRecordsDb")
+        ?? throw new InvalidOperationException("Connection string 'StockRecordsDb' not found.");
+    builder.Services.AddStockRecordsPersistence(connectionString);
+
+    // ── MassTransit + Kafka ───────────────────────────────────────────────
+    builder.Services.AddMassTransit(x =>
+    {
+        x.UsingInMemory();
+
+        x.AddRider(rider =>
         {
-            k.Host(builder.Configuration["Kafka:BootstrapServers"] ?? "localhost:9092");
+            rider.AddConsumer<Ftse500Consumer>();
+            rider.AddConsumer<NyseConsumer>();
+            rider.AddConsumer<NasdaqConsumer>();
 
-            k.TopicEndpoint<Ftse500Data>("FTSE500", "ingestion-consumer-group", e =>
+            rider.UsingKafka((ctx, k) =>
             {
-                e.AutoOffsetReset = AutoOffsetReset.Earliest;
-                e.ConfigureConsumer<Ftse500Consumer>(ctx);
-            });
+                k.Host(builder.Configuration["Kafka:BootstrapServers"] ?? "localhost:9092");
 
-            k.TopicEndpoint<NyseData>("NYSE", "ingestion-consumer-group", e =>
-            {
-                e.AutoOffsetReset = AutoOffsetReset.Earliest;
-                e.ConfigureConsumer<NyseConsumer>(ctx);
-            });
+                k.TopicEndpoint<Ftse500Data>("FTSE500", "ingestion-consumer-group", e =>
+                {
+                    e.AutoOffsetReset = AutoOffsetReset.Earliest;
+                    e.ConfigureConsumer<Ftse500Consumer>(ctx);
+                });
 
-            k.TopicEndpoint<NasdaqData>("NASDAQ", "ingestion-consumer-group", e =>
-            {
-                e.AutoOffsetReset = AutoOffsetReset.Earliest;
-                e.ConfigureConsumer<NasdaqConsumer>(ctx);
+                k.TopicEndpoint<NyseData>("NYSE", "ingestion-consumer-group", e =>
+                {
+                    e.AutoOffsetReset = AutoOffsetReset.Earliest;
+                    e.ConfigureConsumer<NyseConsumer>(ctx);
+                });
+
+                k.TopicEndpoint<NasdaqData>("NASDAQ", "ingestion-consumer-group", e =>
+                {
+                    e.AutoOffsetReset = AutoOffsetReset.Earliest;
+                    e.ConfigureConsumer<NasdaqConsumer>(ctx);
+                });
             });
         });
     });
-});
 
-await builder.Build().RunAsync();
+    await builder.Build().RunAsync();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
